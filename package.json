@@ -2,5 +2,22 @@
   "name": "cactus-josh",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josh-frank/cactus-josh.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/josh-frank/cactus-josh/issues"
+  },
+  "homepage": "https://github.com/josh-frank/cactus-josh#readme",
+  "description": "",
+  "devDependencies": {
+    "jest": "^27.0.6"
+  }
 }
