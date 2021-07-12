@@ -10,14 +10,11 @@
     "type": "git",
     "url": "git+https://github.com/josh-frank/cactus-josh.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [ "poker" ],
+  "author": "Josh Frank",
   "bugs": {
     "url": "https://github.com/josh-frank/cactus-josh/issues"
   },
   "homepage": "https://github.com/josh-frank/cactus-josh#readme",
-  "description": "",
-  "devDependencies": {
-    "jest": "^27.0.6"
-  }
+  "description": ""
 }
