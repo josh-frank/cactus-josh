@@ -25,8 +25,8 @@ exports.rank = card => ( card >> 8 ) % 16;
 exports.suit = card => ( card >> 12 ) % 16;
 
 // Now some arrays & a corresponding function for suit/rank/card name strings
-// Note the irregular spacing
-exports.rankNames = [ null, null, "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace" ];
+// Note the irregular spacing to correspond to how we're representing suits as set bits [ 1, 2, 4, 8 ]
+exports.rankNames = [ "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace" ];
 exports.suitNames = [ null, "Spades", "Hearts", null, "Diamonds", null, null, null, "Clubs" ];
 exports.cardName = card => `${ this.rankNames[ this.rank( card ) ] } of ${ this.suitNames[ this.suit( card ) ] }`;
 
@@ -37,11 +37,11 @@ exports.countBits = bit => {
     return ( ( counter + ( counter >> 3 ) ) & 3340530119 ) % 63;
 }
 
-// A function to compile a full deck
+// Now here's a function to compile a full deck
 // To shuffle, pass anything other than null/undefined/0/NaN/"" as a parameter
 exports.fullDeck = shuffled => {
     const result = [];
-    for ( let rank = 2; rank < 15; rank++ ) { for ( let suit of [ 8, 4, 2, 1 ] ) {
+    for ( let rank = 0; rank < 13; rank++ ) { for ( let suit of [ 8, 4, 2, 1 ] ) {
         // let thisCard = 0;
         // thisCard |= this.rankPrimes[ rank ];
         // thisCard |= rank << 8;
@@ -58,14 +58,57 @@ exports.fullDeck = shuffled => {
     return result;
 }
 
-// When representing cards this way, bitwise-and-ing everything with 61,440
-// will result in a 0 if the hand is not a flush - this is the same as:
+// When representing cards this way, bitwise-and-ing everything with 61,440 will result in a 0
+// if the hand is not a flush - this is the same as:
 // hand => hand[ 0 ] & hand[ 1 ] & hand[ 2 ] & hand[ 3 ] & hand[ 4 ] & 0xF000;
 exports.flush = hand => hand.reduce( ( total, card ) => total & card, 0xF000 );
 
 // Here's where it gets interesting
-// If a hand is a flush, then we bitwise-or-ing everything and shifting it all 16 bits to the right
+
+// If a hand is a flush, then bitwise-or-ing everything and shifting it all 16 bits to the right
 // will result in a number with exactly five set bits (one for each card) - these are all unique and
 // they correspond to a lookup table, flushes[], with the value for each
 exports.flushBitPattern = flush => flush.reduce( ( total, card ) => total | card , 0 ) >> 16;
 exports.flushRank = flush => lookupTables.flushes[ this.flushBitPattern( flush ) ];
+
+// if the hand isn't a flush or straight flush, let's use a different lookup table to check
+// for straights
+exports.fiveUniqueCardsRank = hand => lookupTables.fiveUniqueCards[ this.flushBitPattern( hand ) ];
+
+// We've eliminated flushes, straights and high-card hands – let's move on to pairs & threes
+
+// Since we're representing each rank as a prime, the multiplicand of all rank primes together 
+// is guaranteed to be unique
+exports.primeMultiplicand = hand => hand.reduce( ( total, card ) => total * ( card & 0xFF ), 1 );
+
+// This multiplicand will be way too large for a lookup table so instead we'll do a binary search
+// using this perfect hash lookup function to speed things up to log-n time - courtesy of Paul Senzee
+// http://senzee.blogspot.com/2006/06/some-perfect-hash.html
+exports.findFast = u => {
+    u += 0xe91aaa35;
+    u ^= u >> 16;
+    u += u << 8;
+    u ^= u >> 4;
+    let a  = ( u + ( u << 2 ) ) >> 19;
+    return a ^ lookupTables.hashAdjust[ ( u >> 8 ) & 0x1ff ];
+};
+
+// Finally let's tie it all together - first check for flushes, then straights, then pairs/threes
+exports.handValue = hand => {
+    if ( this.flush( hand ) ) return this.flushRank( hand );
+    let fiveUniqueCardsRank = this.fiveUniqueCardsRank( hand );
+    if ( fiveUniqueCardsRank ) return fiveUniqueCardsRank;
+    return lookupTables.hashValues[ this.findFast( this.flushBitPattern( hand ) ) ];
+};
+
+exports.handRank = handValue => {
+    if ( handValue > 6185 ) return "High card";        // 1277 high card
+    if ( handValue > 3325 ) return "One pair";         // 2860 one pair
+    if ( handValue > 2467 ) return "Two pair";         //  858 two pair
+    if ( handValue > 1609 ) return "Three of a kind";  //  858 three-kind
+    if ( handValue > 1599 ) return "Straight";         //   10 straights
+    if ( handValue > 322 )  return "Flush";            // 1277 flushes
+    if ( handValue > 166 )  return "Full house";       //  156 full house
+    if ( handValue > 10 )   return "Four of a kind";   //  156 four-kind
+    return "Straight flush";                     //   10 straight-flushes
+};
