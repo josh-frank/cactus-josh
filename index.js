@@ -16,7 +16,7 @@ const lookupTables = require( "./lookupTables" );
 exports.suits = { 8: "Clubs", 4: "Diamonds", 2: "Hearts", 1: "Spades" };
 
 // Let's define each rank (2 to 14/Ace) as a prime number
-exports.rankPrimes = [ null, null, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ];
+exports.rankPrimes = [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ];
 
 // And a function for a card's rank, 2 to 14/Ace
 exports.rank = card => ( card >> 8 ) % 16;
@@ -81,17 +81,29 @@ exports.fiveUniqueCardsRank = hand => lookupTables.fiveUniqueCards[ this.flushBi
 // is guaranteed to be unique
 exports.primeMultiplicand = hand => hand.reduce( ( total, card ) => total * ( card & 0xFF ), 1 );
 
-// This multiplicand will be way too large for a lookup table so instead we'll do a binary search
-// using this perfect hash lookup function to speed things up to log-n time - courtesy of Paul Senzee
+// This multiplicand will be way too large for a lookup table so instead we'll speed things up
+// to log-n time with this perfect hash lookup function - courtesy of Paul Senzee
 // http://senzee.blogspot.com/2006/06/some-perfect-hash.html
 exports.findFast = u => {
+    let a, b, r;
     u += 0xe91aaa35;
     u ^= u >> 16;
     u += u << 8;
     u ^= u >> 4;
-    let a  = ( u + ( u << 2 ) ) >> 19;
-    return a ^ lookupTables.hashAdjust[ ( u >> 8 ) & 0x1ff ];
-};
+    b = ( u >> 8 ) & 0x1ff;
+    a = ( u + ( u << 2 ) ) >> 19;
+    r = a ^ lookupTables.hashAdjust[ b ];
+    return r;
+}
+
+// exports.findFast = u => {
+//     u += 0xe91aaa35;
+//     u ^= u >> 16;
+//     u += u << 8;
+//     u ^= u >> 4;
+//     let a  = ( u + ( u << 2 ) ) >> 19;
+//     return a ^ lookupTables.hashAdjust[ ( u >> 8 ) & 0x1ff ];
+// };
 
 // Finally let's tie it all together - first check for flushes, then straights, then pairs/threes
 exports.handValue = hand => {
@@ -110,5 +122,5 @@ exports.handRank = handValue => {
     if ( handValue > 322 )  return "Flush";            // 1277 flushes
     if ( handValue > 166 )  return "Full house";       //  156 full house
     if ( handValue > 10 )   return "Four of a kind";   //  156 four-kind
-    return "Straight flush";                     //   10 straight-flushes
+    return "Straight flush";                           //   10 straight-flushes
 };
