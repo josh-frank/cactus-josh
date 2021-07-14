@@ -84,17 +84,17 @@ exports.primeMultiplicand = hand => hand.reduce( ( total, card ) => total * ( ca
 // This multiplicand will be way too large for a lookup table so instead we'll speed things up
 // to log-n time with this perfect hash lookup function - courtesy of Paul Senzee
 // http://senzee.blogspot.com/2006/06/some-perfect-hash.html
-exports.findFast = u => {
-    let a, b, r;
-    u += 0xe91aaa35;
-    u ^= u >> 16;
-    u += u << 8;
-    u ^= u >> 4;
-    b = ( u >> 8 ) & 0x1ff;
-    a = ( u + ( u << 2 ) ) >> 19;
-    r = a ^ lookupTables.hashAdjust[ b ];
-    return r;
-}
+// exports.findFast = u => {
+//     let a, b, r;
+//     u += 0xe91aaa35;
+//     u ^= u >> 16;
+//     u += u << 8;
+//     u ^= u >> 4;
+//     b = ( u >> 8 ) & 0x1ff;
+//     a = ( u + ( u << 2 ) ) >> 19;
+//     r = a ^ lookupTables.hashAdjust[ b ];
+//     return Math.abs( r );
+// }
 
 // exports.findFast = u => {
 //     u += 0xe91aaa35;
@@ -102,25 +102,40 @@ exports.findFast = u => {
 //     u += u << 8;
 //     u ^= u >> 4;
 //     let a  = ( u + ( u << 2 ) ) >> 19;
-//     return a ^ lookupTables.hashAdjust[ ( u >> 8 ) & 0x1ff ];
+//     return Math.abs( a ^ lookupTables.hashAdjust[ ( u >> 8 ) & 0x1ff ] );
 // };
 
 // Finally let's tie it all together - first check for flushes, then straights, then pairs/threes
-exports.handValue = hand => {
-    if ( this.flush( hand ) ) return this.flushRank( hand );
-    let fiveUniqueCardsRank = this.fiveUniqueCardsRank( hand );
-    if ( fiveUniqueCardsRank ) return fiveUniqueCardsRank;
-    return lookupTables.hashValues[ this.findFast( this.flushBitPattern( hand ) ) ];
-};
+// exports.handValue = hand => {
+//     if ( this.flush( hand ) ) return this.flushRank( hand );
+//     let fiveUniqueCardsRank = this.fiveUniqueCardsRank( hand );
+//     if ( fiveUniqueCardsRank ) return fiveUniqueCardsRank;
+//     return lookupTables.hashValues[ this.findFast( this.primeMultiplicand( hand ) ) ];
+// };
 
-exports.handRank = handValue => {
-    if ( handValue > 6185 ) return "High card";        // 1277 high card
-    if ( handValue > 3325 ) return "One pair";         // 2860 one pair
-    if ( handValue > 2467 ) return "Two pair";         //  858 two pair
-    if ( handValue > 1609 ) return "Three of a kind";  //  858 three-kind
-    if ( handValue > 1599 ) return "Straight";         //   10 straights
-    if ( handValue > 322 )  return "Flush";            // 1277 flushes
-    if ( handValue > 166 )  return "Full house";       //  156 full house
-    if ( handValue > 10 )   return "Four of a kind";   //  156 four-kind
-    return "Straight flush";                           //   10 straight-flushes
-};
+// exports.handRank = handValue => {
+//     if ( handValue > 6185 ) return "High card";        // 1277 high card
+//     if ( handValue > 3325 ) return "One pair";         // 2860 one pair
+//     if ( handValue > 2467 ) return "Two pair";         //  858 two pair
+//     if ( handValue > 1609 ) return "Three of a kind";  //  858 three-kind
+//     if ( handValue > 1599 ) return "Straight";         //   10 straights
+//     if ( handValue > 322 )  return "Flush";            // 1277 flushes
+//     if ( handValue > 166 )  return "Full house";       //  156 full house
+//     if ( handValue > 10 )   return "Four of a kind";   //  156 four-kind
+//     return "Straight flush";                           //   10 straight-flushes
+// };
+
+// A function to generate possible hands (k-combinations)
+// https://medium.com/nerd-for-tech/july-2-generating-k-combinations-with-recursion-in-javascript-71ef2b90b44b
+exports.possibleHands = ( deck, combinationLength ) => {
+    let head, tail, result = [];
+    if ( combinationLength > deck.length || combinationLength < 1 ) { return []; }
+    if ( combinationLength === deck.length ) { return [ deck ]; }
+    if ( combinationLength === 1 ) { return deck.map( element => [ element ] ); }
+    for ( let i = 0; i < deck.length - combinationLength + 1; i++ ) {
+      head = deck.slice( i, i + 1 );
+      tail = this.possibleHands( deck.slice( i + 1 ), combinationLength - 1 );
+      for ( let j = 0; j < tail.length; j++ ) { result.push( head.concat( tail[ j ] ) ); }
+    }
+    return result;
+}
