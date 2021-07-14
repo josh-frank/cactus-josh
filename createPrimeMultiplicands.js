@@ -2,6 +2,8 @@ const fs = require( "fs" );
 
 const cactus = require( "." );
 
+const handNames = [ "No hand", "One pair", "Jacks or better", "Two pair", "Three of a kind", "Straight", "Flush", "Full house", "Four of a kind", "Straight flush", "Royal flush" ]
+
 function value( hand ) {
     const countByPair = [ 0, 0, 0, 0 ];
     const countBySuit = [ 0, 0, 0, 0 ];
@@ -33,15 +35,20 @@ function value( hand ) {
     return score;
 }
 
-const possibleFiveCardHands = cactus.possibleHands( cactus.fullDeck(), 5 );
-const possibleFiveCardMultiplicands = {};
-for ( let hand of possibleFiveCardHands ) possibleFiveCardMultiplicands[ cactus.primeMultiplicand( hand ) ] = value( hand );
+const possibleHands = cactus.possibleHands( cactus.fullDeck(), 5 );
 
-// const possibleFiveCardMultiplicands = possibleFiveCardHands.map( hand => [ cactus.primeMultiplicand( hand ), value( hand ) ] );
+const possibleFlushes = possibleHands.reduce( ( result, hand ) => [ 6, 9, 10 ].includes( value( hand ) ) ? [ ...result, hand ] : result, [] );
 
-fs.writeFileSync( "primeMultiplicands.js", [
-        "exports.primeMultiplicands = {",
-        ...Object.keys( possibleFiveCardMultiplicands ).map( multiplicand => `\t${ multiplicand }: ${ possibleFiveCardMultiplicands[ multiplicand ] },` ),
-        "};"
-    ].join( "\n" )
-);
+const possibleHandsWithFiveUniqueCards = possibleHands.reduce( ( result, hand ) => [ 5, 6, 9, 10 ].includes( value( hand ) ) ? [ ...result, hand ] : result, [] );
+
+console.log( possibleHandsWithFiveUniqueCards.map( hand => hand.map( cactus.cardName ) ) );
+
+const possibleMultiplicands = {};
+for ( let hand of possibleHands ) possibleMultiplicands[ cactus.primeMultiplicand( hand ) ] = value( hand );
+
+// fs.writeFileSync( "primeMultiplicands.js", [
+//         "exports.primeMultiplicands = {",
+//         ...Object.keys( possibleMultiplicands ).map( multiplicand => `\t${ multiplicand }: ${ possibleMultiplicands[ multiplicand ] },` ),
+//         "};"
+//     ].join( "\n" )
+// );
