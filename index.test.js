@@ -49,10 +49,10 @@ test( "primeMultiplicand( hand ) returns the hand's prime values multiplied toge
     expect( cactus.primeMultiplicand( testHands.fourTens ) ).toBe( 3078251 );
 } );
 
-// test( "handValue( hand ) returns the hand's rank from 1 to 7,462", () => {
-    // console.log( testHands.tensFullaSixes.map( cactus.cardName ) );
-    // console.log( cactus.handValue( testHands.tensFullaSixes ) );
-    // console.log( cactus.primeMultiplicand( testHands.tensFullaSixes ) );
-    // console.log( cactus.handRank( cactus.handValue( testHands.tensFullaSixes ) ) );
+test( "handValue( hand ) returns the hand's rank from 1 to 7,462", () => {
+    console.log( testHands.tensFullaSixes.map( cactus.cardName ) );
+    console.log( cactus.handValue( testHands.tensFullaSixes ) );
+    console.log( cactus.primeMultiplicand( testHands.tensFullaSixes ) );
+    console.log( cactus.handRank( cactus.handValue( testHands.tensFullaSixes ) ) );
     // expect().toBe();
-// } );
+} );

@@ -11,6 +11,7 @@
 
 // Import lookup tables
 const lookupTables = require( "./lookupTables" );
+const primeLookup = require( "./primeMultiplicands" );
 
 // Note how suits are represented as set bits
 exports.suits = { 8: "Clubs", 4: "Diamonds", 2: "Hearts", 1: "Spades" };
@@ -106,24 +107,24 @@ exports.primeMultiplicand = hand => hand.reduce( ( total, card ) => total * ( ca
 // };
 
 // Finally let's tie it all together - first check for flushes, then straights, then pairs/threes
-// exports.handValue = hand => {
-//     if ( this.flush( hand ) ) return this.flushRank( hand );
-//     let fiveUniqueCardsRank = this.fiveUniqueCardsRank( hand );
-//     if ( fiveUniqueCardsRank ) return fiveUniqueCardsRank;
-//     return lookupTables.hashValues[ this.findFast( this.primeMultiplicand( hand ) ) ];
-// };
+exports.handValue = hand => {
+    if ( this.flush( hand ) ) return this.flushRank( hand );
+    let fiveUniqueCardsRank = this.fiveUniqueCardsRank( hand );
+    if ( fiveUniqueCardsRank ) return fiveUniqueCardsRank;
+    return primeLookup.primeMultiplicands[ this.primeMultiplicand( hand ) ];
+};
 
-// exports.handRank = handValue => {
-//     if ( handValue > 6185 ) return "High card";        // 1277 high card
-//     if ( handValue > 3325 ) return "One pair";         // 2860 one pair
-//     if ( handValue > 2467 ) return "Two pair";         //  858 two pair
-//     if ( handValue > 1609 ) return "Three of a kind";  //  858 three-kind
-//     if ( handValue > 1599 ) return "Straight";         //   10 straights
-//     if ( handValue > 322 )  return "Flush";            // 1277 flushes
-//     if ( handValue > 166 )  return "Full house";       //  156 full house
-//     if ( handValue > 10 )   return "Four of a kind";   //  156 four-kind
-//     return "Straight flush";                           //   10 straight-flushes
-// };
+exports.handRank = handValue => {
+    if ( handValue > 6185 ) return "High card";        // 1277 high card
+    if ( handValue > 3325 ) return "One pair";         // 2860 one pair
+    if ( handValue > 2467 ) return "Two pair";         //  858 two pair
+    if ( handValue > 1609 ) return "Three of a kind";  //  858 three-kind
+    if ( handValue > 1599 ) return "Straight";         //   10 straights
+    if ( handValue > 322 )  return "Flush";            // 1277 flushes
+    if ( handValue > 166 )  return "Full house";       //  156 full house
+    if ( handValue > 10 )   return "Four of a kind";   //  156 four-kind
+    return "Straight flush";                           //   10 straight-flushes
+};
 
 // A function to generate possible hands (k-combinations)
 // https://medium.com/nerd-for-tech/july-2-generating-k-combinations-with-recursion-in-javascript-71ef2b90b44b
