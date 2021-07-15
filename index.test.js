@@ -74,8 +74,9 @@ test( "handValue( hand ) correctly evaluates all 2,598,960 five-card poker hands
 } );
 
 test( "handRank( hand ) uses handValue( hand ) to correctly return the hand's rank as a string", () => {
-    // console.log( testHands.randomHand.map( cactus.cardName ) );
-    // console.log( cactus.handRank( cactus.handValue( testHands.randomHand ) ) );
+    console.log( testHands.randomHand.map( cactus.cardName ) );
+    console.log( cactus.handValue( testHands.randomHand ) );
+    console.log( cactus.handRank( cactus.handValue( testHands.randomHand ) ) );
     expect( cactus.handRank( cactus.handValue( testHands.queenHighStraight ) ) ).toBe( "Straight" );
     expect( cactus.handRank( cactus.handValue( testHands.tenHighFlush ) ) ).toBe( "Flush" );
     expect( cactus.handRank( cactus.handValue( testHands.sevenHighStraightFlush ) ) ).toBe( "Straight flush" );
