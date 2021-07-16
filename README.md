@@ -21,9 +21,9 @@ console.log( drawFive.map( cactus.cardName ) );
 There are 2,598,960 (52-combination-5) possible five-card hands. Each hand has a unique rank, from 7,462 (the lowest possible hand) to 1 (a royal flush of spades). Use `handValue( hand )` to return a hand's number rank, and `handRank( hand )` to return a string of the hand type:
 
 ```
-console.log( cactus.handValue( drawFive ) ) );
+console.log( cactus.handValue( drawFive ) );
 --> 4601
 
-console.log( cactus.handRank( drawFive ) ) );
+console.log( cactus.handRank( drawFive ) );
 --> One pair
 ```
