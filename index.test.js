@@ -50,7 +50,7 @@ test( "primeMultiplicand( hand ) returns the hand's prime values multiplied toge
 test( "handValue( hand ) correctly evaluates all 2,598,960 five-card poker hands", () => {
     const possibleHands = cactus.possibleHands( testDeck, 5 );
     const fiveCardHistogram = { highCard: 0, onePair: 0,  twoPair: 0,  threeOfAKind: 0,  straight: 0,  flush: 0,  fullHouse: 0,  fourOfAKind: 0, straightFlush: 0 };
-    for ( let hand of possibleHands ) switch ( cactus.handRank( cactus.handValue( hand ) ) ) {
+    for ( let hand of possibleHands ) switch ( cactus.handValue( hand ) ) {
         case "Straight flush": fiveCardHistogram.straightFlush++; break;
         case "Four of a kind": fiveCardHistogram.fourOfAKind++; break;
         case "Full house": fiveCardHistogram.fullHouse++; break;
@@ -75,15 +75,15 @@ test( "handValue( hand ) correctly evaluates all 2,598,960 five-card poker hands
 
 test( "handRank( hand ) uses handValue( hand ) to correctly return the hand's rank as a string", () => {
     console.log( testHands.randomHand.map( cactus.cardName ) );
+    console.log( cactus.handRank( testHands.randomHand ) );
     console.log( cactus.handValue( testHands.randomHand ) );
-    console.log( cactus.handRank( cactus.handValue( testHands.randomHand ) ) );
-    expect( cactus.handRank( cactus.handValue( testHands.queenHighStraight ) ) ).toBe( "Straight" );
-    expect( cactus.handRank( cactus.handValue( testHands.tenHighFlush ) ) ).toBe( "Flush" );
-    expect( cactus.handRank( cactus.handValue( testHands.sevenHighStraightFlush ) ) ).toBe( "Straight flush" );
-    expect( cactus.handRank( cactus.handValue( testHands.fourTens ) ) ).toBe( "Four of a kind" );
-    expect( cactus.handRank( cactus.handValue( testHands.tensFullaSixes ) ) ).toBe( "Full house" );
-    expect( cactus.handRank( cactus.handValue( testHands.fiveHighStraight ) ) ).toBe( "Straight" );
-    expect( cactus.handRank( cactus.handValue( testHands.threeJacks ) ) ).toBe( "Three of a kind" );
-    expect( cactus.handRank( cactus.handValue( testHands.ninesAndSevens ) ) ).toBe( "Two pair" );
-    expect( cactus.handRank( cactus.handValue( testHands.pairOfDeuces ) ) ).toBe( "One pair" );
+    expect( cactus.handValue( testHands.queenHighStraight ) ).toBe( "Straight" );
+    expect( cactus.handValue( testHands.tenHighFlush ) ).toBe( "Flush" );
+    expect( cactus.handValue( testHands.sevenHighStraightFlush ) ).toBe( "Straight flush" );
+    expect( cactus.handValue( testHands.fourTens ) ).toBe( "Four of a kind" );
+    expect( cactus.handValue( testHands.tensFullaSixes ) ).toBe( "Full house" );
+    expect( cactus.handValue( testHands.fiveHighStraight ) ).toBe( "Straight" );
+    expect( cactus.handValue( testHands.threeJacks ) ).toBe( "Three of a kind" );
+    expect( cactus.handValue( testHands.ninesAndSevens ) ).toBe( "Two pair" );
+    expect( cactus.handValue( testHands.pairOfDeuces ) ).toBe( "One pair" );
 } );
