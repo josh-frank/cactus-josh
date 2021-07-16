@@ -1,6 +1,6 @@
 {
   "name": "cactus-josh",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -17,5 +17,5 @@
     "url": "https://github.com/josh-frank/cactus-josh/issues"
   },
   "homepage": "https://github.com/josh-frank/cactus-josh#readme",
-  "description": ""
+  "description": "An implementation of the CactusKev poker hand evaluator"
 }
